@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+< lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Now | Logistics</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            color: #007bff;
+            width: 100%;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            justify-content: center;
+        }
+        .top-bar .logo {
+            height: 40px;
+            margin-right: 40px;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            
+
+
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            position:scroll
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .form-group button:hover {
+            background: #0056b3;
+        }
+        #cost-estimate {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #cost-estimate.hidden {
+            display: none;
+        }
+        #proceed-payment {
+            margin-top: 10px;
+            background: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #proceed-payment:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <img src="./images/pt.png" alt="PECO Logistics Logo" class="logo">
+        <h1>PECO LOGISTICS</h1>
+    </div>
+    <div class="container">
+        <h2>Ship Now</h2>
+        <form id="shipping-form">
+            <div class="form-group">
+                <label>Sender's Name</label>
+                <input type="text" placeholder="Enter sender's name" required>
+                <label>Sender's Mobile Number</label>
+                <input type="text" placeholder="Enter sender's Mobile Number" required>
+            </div>
+            <div class="form-group">
+                <label>Receiver's Name</label>
+                <input type="text" placeholder="Enter receiver's name" required>
+                <label>Receiver's Mobile Number</label>
+                <input type="text" placeholder="Enter receiver's Mobile Number" required>
+
+            </div>
+            <div class="form-group">
+                <label>Package Type</label>
+                <select>
+                    <option>Documents</option>
+                    <option>Electronics</option>
+                    <option>Fragile Items</option>
+                    <option>Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Weight (kg)</label>
+                <input type="number" placeholder="Enter weight" required>
+            </div>
+            <div class="form-group">
+                <label>Delivery Speed</label>
+                <select>
+                    <option>Standard (5-7 days)</option>
+                    <option>Express (2-3 days)</option>
+                    <option>Same-Day</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Upload Package Image</label>
+                <input type="file" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Calculate Shipping</button>
+            </div>
+        </form>
+        <div id="cost-estimate" class="hidden">
+            <h3>Estimated Cost: <span id="cost">$0.00</span></h3>
+            <button id="proceed-payment">Proceed to Payment</button>
+        </div>
+    </div>
+
+     <script>
+        const form = document.getElementById('shipping-form');
+        const costEstimate = document.getElementById('cost-estimate');
+        const cost = document.getElementById('cost');
+        const proceedPayment = document.getElementById('proceed-payment');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const weight = form.elements[3].value;
+            const deliverySpeed = form.elements[4].value;
+            let costValue = 0;
+            if (weight <= 5) {
+                costValue = 10;
+            } else if (weight <= 10) {
+                costValue = 20;
+            } else if (weight <= 20) {
+                costValue = 30;
+            } else {
+                costValue = 50;
+            }
+            if (deliverySpeed === 'Express (2-3 days)') {
+                costValue += 10;
+            } else if (deliverySpeed === 'Same-Day') {
+                costValue += 20;
+            }
+            cost.textContent = `$${costValue}.00`;
+            costEstimate.classList.remove('hidden');
+        });
+
+        proceedPayment.addEventListener('click', function() {
+            alert('Payment Successful!');
+        });
+        
+    </script>
+
+<footer class="footer" style="margin-top: 2px;">
+    
+        <div class="social-icons" style="width: 100vw">
+            <a href="#"><img src="./images/maili.jpeg" alt="Email"></a>
+            <a href="#"><img src="./images/faci.jpeg" alt="Facebook"></a>
+            <a href="#"><img src="./images/wassapi.jpeg" alt="WhatsApp"></a>
+            <a href="#"><img src="./images/ticki.jpeg" alt="TikTok"></a>
+            <p>2025 © - all rights reserved</p>
+        </div>
+</footer>
+
+</body>
+
+    
+
+</html>

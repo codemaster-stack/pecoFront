@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+<header>
+    <header style="display: flex; justify-content: space-evenly; align-items: center;">
+        <img src="./images/pt.png" alt="PECO Logistics Logo" class="logo">
+        <h1>PECO LOGISTICS</h1>
+    </header>
+    <h1 style="text-align: center;">Admin Dashboard</h1>
+</header>
+
+<section style="display: flex; justify-content: center; margin-top: 20px; gap: 10px;">
+    <input type="text" id="searchInput" placeholder="Search by Name, Email, PhoneNo, or AccountNo" 
+           style="padding: 10px; width: 300px; border: 1px solid #ccc;">
+    <button onclick="searchUser()" style="height: 40px; width: 100px; font-size: medium; color: white; background-color: #00aeff; border: none;">Search</button>
+</section>
+
+<section style="display: flex; justify-content: center; margin-top: 40px; gap: 20px;">
+    <button onclick="getAllUsers()"  style="height: 49px; width: 180px; font-size: larger; color: whitesmoke; background-color: #00aeff; border: none;">Get All Users</button>
+    <button onclick="deleteUser()" style="height: 49px; width: 180px; font-size: larger; color: whitesmoke; background-color: #00aeff; border: none;">Delete User</button>
+    <button onclick="getAdminProfile()"  style="height: 49px; width: 180px; font-size: larger; color: whitesmoke; background-color: #00aeff; border: none;">View Profile</button>
+    <button onclick="updateAdminProfile()" style="height: 49px; width: 180px; font-size: larger; color: whitesmoke; background-color: #00aeff; border: none;">Update Profile</button>
+    <button onclick="logout()"  style="height: 49px; width: 180px; font-size: larger; color: whitesmoke; background-color: #00aeff; border: none;">Logout</button>
+</section>
+
+<div id="output" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; width: 80%; margin-left: auto; margin-right: auto; overflow-x: auto;"></div>
+
+<script>
+    const API_URL = "https://onboarding-api-3.onrender.com/api";
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+
+    // Redirect if not admin
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!token || role !== "admin") {
+            alert("Unauthorized access! Redirecting...");
+            window.location.href = "index.html";
+        }
+    });
+
+    async function getAllUsers() {
+    try {
+        const token = localStorage.getItem("token"); // Get token from storage
+
+        if (!token) {
+            alert("No token found! Please log in again.");
+            window.location.href = "index.html";
+            return;
+        }
+
+        console.log("Stored Token:", token); // Debugging - Check stored token
+
+        const response = await fetch(`${API_URL}/admins/getUsers`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`, 
+                "Content-Type": "application/json"
+            }
+        });
+
+        console.log("Request Sent With Headers:", {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            console.log("Fetched Data:", data);
+            displayUsers(data);
+        } else {
+            console.error("Error Response:", data);
+            alert(data.message || "Failed to fetch users.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error fetching users.");
+    }
+};
+
+
+async function searchUser() {
+    const query = document.getElementById("searchInput").value.trim(); // Corrected ID
+
+    if (!query) {
+        alert("Please enter a search query.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/admins/searchUser?query=${query}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`, 
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "No users found.");
+            return;
+        }
+
+        displayUsers(data); // Display search results
+    } catch (error) {
+        console.error("Search Error:", error);
+        alert("Error fetching users.");
+    }
+}
+
+
+
+function displayUsers(users) {
+    let outputDiv = document.getElementById("output");
+
+    let tableHTML = `
+        <table border='1' style='width:100%; text-align:left; border-collapse: collapse;'>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Accounts</th>
+                    <th>Gender</th>
+                    <th>Residence</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    users.forEach(user => {
+        let accountInfo = user.accounts.map(account => `${account.bankAccountNumber} (${account.accountType})`).join(", ");
+
+        tableHTML += `
+            <tr>
+                <td>${user._id}</td>
+                <td>${user.fullName}</td>
+                <td>${user.email}</td>
+                <td>${user.phoneNumber}</td>
+                <td>${accountInfo}</td>
+                <td>${user.gender}</td>
+                <td>${user.placeOfResidence}</td>
+            </tr>`;
+    });
+
+    tableHTML += `</tbody></table>`;
+    outputDiv.innerHTML = tableHTML;
+}
+
+
+
+async function deleteUser() {
+    const userId = prompt("Enter user ID to delete:");
+    if (!userId) return;
+    
+    try {
+        const response = await fetch(`${API_URL}/admins/users/${userId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert(data.message || "User deleted successfully!");
+            getAllUsers(); // Refresh user list
+        } else {
+            alert(data.message || "Failed to delete user.");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error deleting user.");
+    }
+}
+
+    async function getAdminProfile() {
+        try {
+            const response = await fetch(`${API_URL}/admins/profile`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await response.json();
+            document.getElementById("output").innerText = JSON.stringify(data, null, 2);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error fetching profile.");
+        }
+    }
+
+    async function updateAdminProfile() {
+        const newEmail = prompt("Enter new email:");
+        if (!newEmail) return;
+        
+        try {
+            const response = await fetch(`${API_URL}/admins/profile`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ email: newEmail })
+            });
+            const data = await response.json();
+            alert(data.message || "Profile updated successfully!");
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error updating profile.");
+        }
+    }
+
+    function logout() {
+        if (confirm("Are you sure you want to log out?")) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            window.location.href = "loginform.html";
+        }
+    }
+</script>
+</body>
+</html>

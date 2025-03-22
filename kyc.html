@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Verification</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+</head>
+<body>   
+    <div class="kyc-container">
+        <h2>KYC Verification</h2>
+        <form id="kycForm" enctype="multipart/form-data">
+            <label for="accountNumber">Account Number:</label>
+            <input type="text" id="accountNumber" name="accountNumber" readonly>
+
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" readonly>
+
+            <label for="gender">Gender:</label>
+            <input type="text" id="gender" name="gender" readonly>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" readonly>
+
+            <label for="phone">Phone Number:</label>
+            <input type="text" id="phone" name="phone" readonly>
+
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+
+            <label for="profilePic">Profile Picture:</label>
+            <input type="file" id="profilePic" name="profilePic" accept="image/*" required>
+
+            <label for="addressProof">Proof of Address (Utility Bill/Receipt):</label>
+            <input type="file" id="addressProof" name="addressProof" accept="image/*, .pdf" required>
+
+            <label for="idProof">Means of Identification (Govt ID):</label>
+            <input type="file" id="idProof" name="idProof" accept="image/*, .pdf" required>
+
+            <label for="nin">NIN (National Identification Number):</label>
+            <input type="text" id="nin" name="nin" required>
+
+            <label for="bvn">BVN (Bank Verification Number):</label>
+            <input type="text" id="bvn" name="bvn" required>
+
+            <label for="signature">Upload Signature:</label>
+            <input type="file" id="signature" name="signature" accept="image/*" required>
+
+            <div id="businessFields" style="display: none;">
+                <label for="cacDocs">Upload CAC Documents:</label>
+                <input type="file" id="cacDocs" name="cacDocs" accept="image/*, .pdf">
+            </div>
+
+            <button type="submit">Submit KYC</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const accountNumber = urlParams.get("account");
+            const accountType = urlParams.get("type");
+
+            if (!accountNumber || !accountType) {
+                alert("Invalid access. Missing account details.");
+                window.location.href = "home.html";
+                return;
+            }
+
+            document.getElementById("accountNumber").value = accountNumber;
+            
+            if (accountType === "Business") {
+                document.getElementById("businessFields").style.display = "block";
+            }
+
+            const token = localStorage.getItem("token");
+if (!token) {
+    alert("You need to log in first.");
+    window.location.href = "login.html"; // Redirect to login page
+} else {
+    console.log("Token being sent:", token);
+    try {
+        const response = await fetch("https://onboarding-api-3.onrender.com/api/users/me", {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + localStorage.getItem("token")}
+        });
+
+        const userData = await response.json();
+        console.log("Response Status:", response.status);
+        
+        if (response.ok) {
+            console.log("User Data:", userData);
+            document.getElementById("fullName").value = userData.fullName;
+            document.getElementById("email").value = userData.email;
+            document.getElementById("phone").value = userData.phone;
+            document.getElementById("gender").value = userData.gender;
+        } else {
+            const errorData = await response.json();
+            console.error("Failed to fetch user data:", errorData);
+            alert(errorData.message || "Failed to fetch user data.");
+    }
+}catch(error) {
+        console.error("Error fetching user data:", error);
+        alert("Error fetching user details. Please log in again.");
+    }}
+
+            document.getElementById("kycForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                
+                const formData = new FormData(this);
+                console.log("Submitting KYC Data:");
+    for (const [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
+                
+                try {
+                    const response = await fetch("https://onboarding-api-3.onrender.com/api/banking/submitKYC", {
+                        method: "POST",
+                        headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                        body: formData
+                    });
+                    const data = await response.json();
+                    console.log("Server Response:", data);
+                    if (response.ok) {
+                        alert("KYC Submitted Successfully!");
+                        window.location.href = "home.html";
+                    } else {
+                        alert(data.message || "KYC submission failed. Try again.");
+                    }
+                } catch (error) {
+                    console.error("Error submitting KYC:", error);
+                    alert("Something went wrong. Please try again later.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

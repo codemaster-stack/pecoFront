@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Shipment - PECO Logistics</title>
+    <link rel="stylesheet" href="./index.css">
+    <script defer src="./script.js"></script>
+</head>
+<body>
+
+    <!-- Header with Navbar -->
+    <header>
+        <div class="top-bar">
+            <img src="./images/pt.png" alt="PECO Logistics Logo" class="logo">
+            <h1>PECO LOGISTICS</h1>
+            <nav>
+                <ul>
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="services.html">Services</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Tracking Section -->
+    <section class="tracking-container" style="justify-items:center;align-content: center; font-size: 30px; height: 200px;">
+        <h2>Track Your Shipment</h2>
+        <p>Enter your tracking number to check your shipment status.</p>
+        <div class="tracking-box">
+            <input type="text" id="tracking-number" placeholder="Enter Tracking Number" style="width: 340px; height: 40px;">
+            <button onclick="trackShipment()" style="width: 100px; height: 40px; font-size: 17px; border-style: none; background-color: #00AEEF; color: white;">Track</button> 
+        </div>
+        <div id="tracking-result"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p style="display:flex; justify-content: center; margin-top: 29px;">&copy; 2025 PECO Logistics - All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

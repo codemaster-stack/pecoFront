@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PECO CASH - Banking</title>
+    <link rel="stylesheet" href="index.css">
+    
+    <style>
+        /* Reset styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Background Video */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Main Content */
+        .content {
+            position: relative;
+            text-align: center;
+            color: black;
+            font-family: Arial, sans-serif;
+            padding: 5rem 2rem;
+        }
+
+        .hero {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login {
+            background-color: blue;
+            
+            color: white;
+        }
+
+        .signup {
+            background-color: blue;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Account Response */
+        #accountResponse {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Video -->
+    <div class="video-container">
+        <video autoplay muted loop id="background-video">
+            <source src="./images/currency.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <header>
+            <nav style="position: relative; background-color: white; height: 100px;">
+                <img src="./images/pt.png" alt="Logo" style="height: 50px;">
+                <ul style="position: absolute; text-align: center; background-color: rgb(34, 203, 246); color: white; width: 100%; margin-top: 20px;">
+                    <li><a href="#">Company</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <h1>With PECO CASH,<br>Money Moves With You.</h1>
+            <p style="color: blue;">Wherever you go, we got you.</p>
+
+            <!-- Authentication Buttons -->
+            <div class="auth-buttons">
+                <button id="businessAccountBtn" class="login">Get Business Account</button>
+                <button id="personalAccountBtn" class="signup">Get Personal Account</button>
+                <li><button id="logoutBtn" style="background-color: blue; color: white; border: none; padding: 8px 12px; cursor: pointer; width: 80px; height: 60px; ">Logout</button></li>
+            </div>
+
+            <!-- Account Response Display -->
+            <p id="accountResponse"></p>
+        </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userId = localStorage.getItem("userId");
+            const token = localStorage.getItem("token");
+
+            if (!userId || !token) {
+                alert("You need to log in first.");
+                window.location.href = "login.html"; // Redirect to login page
+                return;
+            }
+
+            // Buttons
+            const personalAccountBtn = document.getElementById("personalAccountBtn");
+            const businessAccountBtn = document.getElementById("businessAccountBtn");
+
+            personalAccountBtn.addEventListener("click", () => requestAccountNumber("Personal", personalAccountBtn));
+            businessAccountBtn.addEventListener("click", () => requestAccountNumber("Business", businessAccountBtn));
+        });
+
+        async function requestAccountNumber(accountType, button) {
+            const userId = localStorage.getItem("userId");
+            const token = localStorage.getItem("token"); // Retrieve the token
+            const accountResponse = document.getElementById("accountResponse");
+
+            if (!userId || !token) {
+                alert("Authentication error. Please log in again.");
+                window.location.href = "login.html"; // Redirect to login page
+                return;
+            }
+
+            console.log(`Requesting ${accountType} account for user: ${userId}`);
+
+            // Disable button and show loading state
+            button.disabled = true;
+            button.innerText = "Processing...";
+
+            try {
+                const response = await fetch("https://onboarding-api-3.onrender.com/api/banking/getAccountNumber", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({ userId, accountType }),
+                });
+
+                const data = await response.json();
+                console.log("Server Response:", data);
+
+                if (response.ok) {
+                    if (data.accountNumber) {
+    accountResponse.innerText = `Your new ${accountType} account number: ${data.accountNumber}. Please check your email for details.`;
+    accountResponse.style.color = "Blue";
+
+                    } else {
+                        accountResponse.innerText = data.message || "Unexpected response.";
+                        accountResponse.style.color = "orange";
+                    }
+                } else {
+                    accountResponse.innerText = `Error: ${data.message || "Something went wrong."}`;
+                    accountResponse.style.color = "red";
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                accountResponse.innerText = "Something went wrong. Please try again.";
+                accountResponse.style.color = "red";
+            } finally {
+                // Re-enable button and reset text
+                button.disabled = false;
+                button.innerText = accountType === "Personal" ? "Get Personal Account" : "Get Business Account";
+            }
+        }
+
+        if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("userId"); // Remove user ID
+            localStorage.removeItem("token"); // Remove authentication token
+            alert("You have been logged out.");
+            window.location.href = "loginform.html"; // Redirect to login page
+        });
+    }
+
+    </script>
+
+</body>
+</html>
