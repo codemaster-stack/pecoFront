@@ -97,7 +97,7 @@ if (!token) {
         
         if (response.ok) {
             console.log("User Data:", userData);
-            document.getElementById("userId").value = userData._id; 
+            document.getElementById("userId").value = userData.userId; 
             document.getElementById("fullName").value = userData.fullName;
             document.getElementById("placeOfResidence").value = userData.placeOfResidence;
             document.getElementById("email").value = userData.email;
