@@ -102,7 +102,7 @@
     
                 if (response.ok) {
                     console.log("User Data:", userData);
-                    document.getElementById("userId").value = userData._id; // Fixing incorrect property
+                    document.getElementById("userId").value = userData.userId; // Fixing incorrect property
                     document.getElementById("fullName").value = userData.fullName;
                     document.getElementById("placeOfResidence").value = userData.placeOfResidence;
                     document.getElementById("email").value = userData.email;
