@@ -58,72 +58,72 @@
                <input type="file" id="cacDocuments" name="cacDocuments" accept="image/*, .pdf">
             </div>
 
-            <button type="submit">Submit KYC</button>
+            <button type="submitKYCButton">Submit KYC</button>
         </form>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", async function () {
-            // Extract URL parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            const accountNumber = urlParams.get("account");
-            const accountType = urlParams.get("type");
-    
-            if (!accountNumber || !accountType) {
-                alert("Invalid access. Missing account details.");
-                window.location.href = "home.html";
-                return;
-            }
-    
-            document.getElementById("accountNumber").value = accountNumber;
-            if (accountType === "Business") {
-                document.getElementById("businessFields").style.display = "block";
-            }
-    
-            // **Check if token exists**
-            const token = localStorage.getItem("token");
-            if (!token) {
-                alert("You need to log in first.");
-                window.location.href = "login.html"; // Redirect to login page
-                return;
-            }
-    
-            console.log("Token being sent:", token);
-    
-            // **Fetch user data**
-            try {
-                const response = await fetch("https://onboarding-api-3.onrender.com/api/users/me", {
-                    method: "GET",
-                    headers: { "Authorization": "Bearer " + token }
-                });
-    
-                console.log("Response Status:", response.status);
-                const userData = await response.json();
-    
-                if (response.ok) {
-                    console.log("User Data:", userData);
-                    document.getElementById("userId").value = userData.userId; // Fixing incorrect property
-                    document.getElementById("fullName").value = userData.fullName;
-                    document.getElementById("placeOfResidence").value = userData.placeOfResidence;
-                    document.getElementById("email").value = userData.email;
-                    document.getElementById("phone").value = userData.phone;
-                    document.getElementById("gender").value = userData.gender;
-                } else {
-                    console.error("Failed to fetch user data:", userData);
-                    alert(userData.message || "Failed to fetch user data.");
-                }
-            } catch (error) {
-                console.error("Error fetching user data:", error);
-                alert("Error fetching user details. Please log in again.");
-            }});
-            // **KYC Form Submission**
-            document.addEventListener("DOMContentLoaded", function () {
+    // Extract URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const accountNumber = urlParams.get("account");
+    const accountType = urlParams.get("type");
+
+    if (!accountNumber || !accountType) {
+        alert("Invalid access. Missing account details.");
+        window.location.href = "home.html";
+        return;
+    }
+
+    document.getElementById("accountNumber").value = accountNumber;
+    if (accountType === "Business") {
+        document.getElementById("businessFields").style.display = "block";
+    }
+
+    // **Check if token exists**
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You need to log in first.");
+        window.location.href = "login.html"; 
+        return;
+    }
+
+    console.log("Token being sent:", token);
+
+    // **Fetch user data**
+    try {
+        const response = await fetch("https://onboarding-api-3.onrender.com/api/users/me", {
+            method: "GET",
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+        console.log("Response Status:", response.status);
+        const userData = await response.json();
+
+        if (response.ok) {
+            console.log("User Data:", userData);
+            document.getElementById("userId").value = userData.userId; 
+            document.getElementById("fullName").value = userData.fullName;
+            document.getElementById("placeOfResidence").value = userData.placeOfResidence;
+            document.getElementById("email").value = userData.email;
+            document.getElementById("phone").value = userData.phone;
+            document.getElementById("gender").value = userData.gender;
+        } else {
+            console.error("Failed to fetch user data:", userData);
+            alert(userData.message || "Failed to fetch user data.");
+        }
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        alert("Error fetching user details. Please log in again.");
+    }
+
+    // **KYC Form Submission**
     document.getElementById("kycForm").addEventListener("submit", async function (event) {
         event.preventDefault(); // Prevent default form submission
 
         const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB limit
         const formData = new FormData(this);
-        const submitButton = document.getElementById("submitKYCButton"); // Ensure you have a submit button with this ID
+        const submitButton = document.getElementById("submitKYCButton"); 
 
         // Disable submit button to prevent duplicate submissions
         submitButton.disabled = true;
@@ -144,13 +144,12 @@
                     alert(`File "${file.name}" is too large! Max allowed size is 10MB.`);
                     submitButton.disabled = false;
                     submitButton.textContent = "Submit KYC";
-                    return; // Stop submission if file is too large
+                    return; 
                 }
             }
         }
 
         // **Ensure Token Exists**
-        const token = localStorage.getItem("token");
         if (!token) {
             alert("Session expired. Please log in again.");
             window.location.href = "login.html";
@@ -169,17 +168,16 @@
             console.log("Server Response:", data);
 
             if (response.ok) {
-                alert(" KYC Submitted Successfully!");
+                alert("KYC Submitted Successfully!");
                 window.location.href = "home.html";
             } else {
                 console.error("KYC Submission Failed:", data);
-                alert(data.message || " KYC submission failed. Please try again.");
+                alert(data.message || "KYC submission failed. Please try again.");
             }
         } catch (error) {
             console.error("Error submitting KYC:", error);
-            alert(" Something went wrong. Please check your internet connection and try again.");
+            alert("Something went wrong. Please check your internet connection and try again.");
         } finally {
-            // Re-enable the submit button
             submitButton.disabled = false;
             submitButton.textContent = "Submit KYC";
         }
