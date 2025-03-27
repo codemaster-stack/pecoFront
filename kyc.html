@@ -115,6 +115,16 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
         const formData = new FormData(this);
+
+        console.log("Form Data Before Submission:");
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ": ", pair[1]);  // Print key-value pairs
+    };
+
+    for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+};
+
         const submitButton = document.getElementById("submitKYCButton"); 
 
         submitButton.disabled = true;
@@ -159,11 +169,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 window.location.href = "login.html";
                 return;
             }
-
-            for (let [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-}
-
 
             const response = await fetch("https://onboarding-api-3.onrender.com/api/banking/submitKYC", {
                 method: "POST",
