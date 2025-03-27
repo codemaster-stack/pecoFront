@@ -40,8 +40,8 @@
         <label for="phone">Phone Number:</label>
         <input type="text" id="phone" name="phone" required>
 
-        <label for="country">Place Of Residence:</label>
-        <input type="text" id="country" name="country" required>
+        <label for="placeOfResidence">Place Of Residence:</label>
+        <input type="text" id="placeOfResidence" name="placeOfResidence" required>
 
         <label for="gender">Gender:</label>
   <select id="gender" name="gender" required>
@@ -70,7 +70,7 @@
       const fullName = document.getElementById("fullname").value; // fullName (not fullname)
       const email = document.getElementById("email").value;
       const phoneNumber = document.getElementById("phone").value; // phoneNumber (not phone)
-      const placeOfResidence = document.getElementById("country").value; // placeOfResidence (not country)
+      const placeOfResidence = document.getElementById("placeOfResidence").value; // placeOfResidence (not country)
       const gender = document.getElementById("gender").value;
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirm-password").value;
@@ -84,7 +84,7 @@
           const response = await fetch("https://onboarding-api-3.onrender.com/api/users/signup", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ fullName, email, phoneNumber, placeOfResidence, gender, password }) // Fixed field names
+              body: JSON.stringify({ fullName, email, phone, placeOfResidence, gender, password }) // Fixed field names
           });
   
           const data = await response.json();
