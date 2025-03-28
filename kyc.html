@@ -32,7 +32,7 @@
             <input type="email" id="email" name="email" readonly>
 
             <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" name="phone" readonly>
+            <input type="text" id="phone" name="phoneNumber" readonly>
 
             <label for="dob">Date of Birth:</label>
             <input type="date" id="dob" name="dob" required>
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             document.getElementById("fullName").value = userData.fullName;
             document.getElementById("placeOfResidence").value = userData.placeOfResidence;
             document.getElementById("email").value = userData.email;
-            document.getElementById("phone").value = userData.phone;
+            document.getElementById("phone").value = userData.phoneNumber;
             document.getElementById("gender").value = userData.gender;
         } else {
             alert(userData.message || "Failed to fetch user data.");
