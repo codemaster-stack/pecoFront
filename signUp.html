@@ -37,8 +37,8 @@
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" required>
 
-        <label for="phone">Phone Number:</label>
-        <input type="text" id="phone" name="phone" required>
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="text" id="phoneNumber" name="phoneNumber" required>
 
         <label for="placeOfResidence">Place Of Residence:</label>
         <input type="text" id="placeOfResidence" name="placeOfResidence" required>
@@ -67,9 +67,9 @@
       event.preventDefault();
   
       // Fix: Use exact field names as required by backend
-      const fullName = document.getElementById("fullname").value; // fullName (not fullname)
+      const fullName = document.getElementById("fullName").value; // fullName (not fullname)
       const email = document.getElementById("email").value;
-      const phone = document.getElementById("phone").value; // phoneNumber (not phone)
+      const phoneNumber = document.getElementById("phoneNumber").value; // phoneNumber (not phone)
       const placeOfResidence = document.getElementById("placeOfResidence").value; // placeOfResidence (not country)
       const gender = document.getElementById("gender").value;
       const password = document.getElementById("password").value;
@@ -84,7 +84,7 @@
           const response = await fetch("https://onboarding-api-3.onrender.com/api/users/signup", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ fullName, email, phone, placeOfResidence, gender, password }) // Fixed field names
+              body: JSON.stringify({ fullName, email, phoneNumber, placeOfResidence, gender, password }) // Fixed field names
           });
   
           const data = await response.json();
