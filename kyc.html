@@ -57,7 +57,7 @@
 
                 <div id="businessFields" style="display: none;">
                     <label for="cacDocuments">Upload CAC Documents:</label>
-                    <input type="file" id="cacDocuments" name="cacDocuments" accept="image/*, .pdf">
+                    <input type="file" id="cacDocuments" name="cacDocuments" accept="image/*, .pdf" required>
                 </div>
 
             <button type="submit" id="submitKYCButton">Submit KYC</button>
@@ -79,8 +79,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     document.getElementById("accountNumber").value = accountNumber;
     if (accountType === "Business") {
-        document.getElementById("businessFields").style.display = "block";
-    }
+    document.getElementById("businessFields").style.display = "block";
+    document.getElementById("cacDocuments").setAttribute("required", "true");
+} else {
+    document.getElementById("cacDocuments").removeAttribute("required");
+}
 
     const token = localStorage.getItem("token");
     if (!token) {
