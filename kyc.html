@@ -103,7 +103,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const userData = await response.json();
         if (response.ok) {
-            document.getElementById("userId").value = userData.userId; 
+            document.getElementById("userId").value = userData.userId;
+            document.getElementById("accountType").value = accountType;
             document.getElementById("fullName").value = userData.fullName;
             document.getElementById("placeOfResidence").value = userData.placeOfResidence;
             document.getElementById("email").value = userData.email;
