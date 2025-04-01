@@ -80,14 +80,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
-    document.getElementById("accountNumber").value = accountNumber;
-    if (accountType === "Business") {
-    document.getElementById("businessFields").style.display = "block";
-    document.getElementById("cacDocuments").setAttribute("required", "true");
-} else {
-    document.getElementById("cacDocuments").removeAttribute("required");
-}
-
+    // Get token
     const token = localStorage.getItem("token");
     if (!token) {
         alert("You need to log in first.");
@@ -95,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return;
     }
 
+    // Fetch user data
     try {
         const response = await fetch("https://onboarding-api-l0yt.onrender.com/api/users/me", {
             method: "GET",
@@ -103,13 +97,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const userData = await response.json();
         if (response.ok) {
+            // Populate form fields with user data
             document.getElementById("userId").value = userData.userId;
-            document.getElementById("accountType").value = accountType;
             document.getElementById("fullName").value = userData.fullName;
             document.getElementById("placeOfResidence").value = userData.placeOfResidence;
             document.getElementById("email").value = userData.email;
             document.getElementById("phoneNumber").value = userData.phoneNumber;
             document.getElementById("gender").value = userData.gender;
+
+            // Look through accounts array for the right account based on accountNumber and accountType
+            const userAccount = userData.accounts.find(account => account.bankAccountNumber === accountNumber && account.accountType === accountType);
+
+            if (userAccount) {
+                document.getElementById("accountNumber").value = userAccount.bankAccountNumber;
+                document.getElementById("accountType").value = userAccount.accountType;
+
+                if (accountType === "Business") {
+                    document.getElementById("businessFields").style.display = "block";
+                    document.getElementById("cacDocuments").setAttribute("required", "true");
+                } else {
+                    document.getElementById("cacDocuments").removeAttribute("required");
+                }
+            } else {
+                alert("No matching account found.");
+            }
         } else {
             alert(userData.message || "Failed to fetch user data.");
         }
@@ -117,20 +128,18 @@ document.addEventListener("DOMContentLoaded", async function () {
         alert("Error fetching user details. Please log in again.");
     }
 
+    // Handle form submission
     document.getElementById("kycForm").addEventListener("submit", async function (event) {
         event.preventDefault(); 
 
         const MAX_FILE_SIZE = 10 * 1024 * 1024;
         const formData = new FormData(this);
 
+        // Log FormData for debugging
         console.log("Form Data Before Submission:");
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ": ", pair[1]);  // Print key-value pairs
-    };
-
-    for (let [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-};
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ": ", pair[1]);
+        }
 
         const submitButton = document.getElementById("submitKYCButton"); 
 
@@ -170,12 +179,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     formData.set(inputName, file, file.name);
                 }
             }
-            const token = localStorage.getItem("token");
-            if (!token) {
-                alert("Session expired. Please log in again.");
-                window.location.href = "login.html";
-                return;
-            }
 
             const response = await fetch("https://onboarding-api-l0yt.onrender.com/api/banking/submitKYC", {
                 method: "POST",
@@ -198,6 +201,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     });
 });
+
     </script>
 </body>
 </html>
